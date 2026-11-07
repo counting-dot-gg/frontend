@@ -1,0 +1,40 @@
+name: dev-setup
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - .env.example
+      - next.config.js
+      - .github/workflows/dev-setup.yml
+
+jobs:
+  fresh-clone:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - run: cp .env.example .env.local
+      - run: npm ci
+      - name: Start
+        run: npm run dev > dev.log 2>&1 &
+      - name: Serve the home page
+        run: |
+          for i in $(seq 1 90); do
+            if curl -sf -o home.html http://localhost:3000/ && grep -q 'counting.gg' home.html; then exit 0; fi
+            sleep 2
+          done
+          cat dev.log
+          exit 1
