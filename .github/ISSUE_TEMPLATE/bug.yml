@@ -1,0 +1,51 @@
+name: Bug
+description: Something on the site looks or behaves wrongly
+labels: [bug]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      placeholder: /thread/main
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: A screenshot helps.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open /thread/main
+        2. ...
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options: [Light, Dark, Both]
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options: [Chrome, Firefox, Safari, Edge, Other]
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options: [Desktop, Phone, Tablet]
+  - type: input
+    id: version
+    attributes:
+      label: Commit
+      placeholder: git rev-parse --short HEAD
