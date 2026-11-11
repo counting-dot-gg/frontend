@@ -14,6 +14,9 @@ import { LC_THREAD_ID, LC_THREAD_NAME, LC_THREAD_TITLE, LC_THREAD_UUID, REDDIT_R
 import { hourBarHTML, hourBarKey } from '@/lib/hourBar'
 import { useHourBarRelabel } from '@/lib/useDayRollover'
 import ReactionPickerOverlay from './ReactionPickerOverlay'
+import RegionPicker from './RegionPicker'
+import { useRegional, type Regional } from './useRegional'
+import { attachSocket } from '@/lib/regional'
 import { RankIconBadge } from '@/components/rank/RankIconBadge'
 import type { ThreadRankRow } from '@/lib/rankUtils'
 import type { ActiveMacroRuntime } from '@/lib/macroRuntime'
@@ -673,8 +676,9 @@ function SidebarPanel({
   threadTitle, threadName, status, statusColor, watcherCount, activeTab, onTabChange,
   threadUUID, threadEnabled, socket, isLive, thread, userUUID, userUsername, userXP, userRoles, isLoggedIn, splits,
   onMacroRuntimeChange, isReddit, redditAbout, redditLag, redditLatency, redditStatus, redditUsername, redditAccess,
-  threadValidationType,
+  threadValidationType, regional,
 }: {
+  regional: Regional
   redditAccess?: string
   onMacroRuntimeChange?: (runtime: ActiveMacroRuntime | null) => void
   isReddit?: boolean
@@ -725,10 +729,19 @@ function SidebarPanel({
                 fontFamily: 'monospace', flexShrink: 0,
               }}
             >
+              {!regional.owner?.movable && (
+                <span style={{
+                  minWidth: '7ch', textAlign: 'right', color: 'var(--thread-muted)',
+                  fontVariantNumeric: 'tabular-nums', visibility: regional.ping === null ? 'hidden' : 'visible',
+                }}>
+                  {regional.ping ?? 0} ms
+                </span>
+              )}
               <span>●{viewers !== null ? ` ${viewers}` : ''} {status}</span>
             </span>
           )
         })()}
+        <RegionPicker regional={regional} isLoggedIn={isLoggedIn} />
       </div>
 
       <div style={{
@@ -916,6 +929,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('about')
 
   const [threadName, setThreadName] = useState(initialThreadName)
+  const regional = useRegional(socketInstance, threadName)
 
   _currentThreadName = threadName
   _rowsAreReddit = isReddit
@@ -1439,6 +1453,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
   useEffect(() => {
     if (isReddit) { setStatus('live'); return }
     const socket = getSocket()
+    attachSocket(socket)
 
     const reporter = new LatencyReporter(socket, threadNameRef.current)
     reporter.start()
@@ -2017,6 +2032,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
             status={status}
             statusColor={statusColor}
             watcherCount={watcherCount}
+            regional={regional}
             onMacroRuntimeChange={setMacroRuntime}
             activeTab={sidebarTab}
             onTabChange={setSidebarTab}
@@ -2049,6 +2065,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
             status={status}
             statusColor={statusColor}
             watcherCount={watcherCount}
+            regional={regional}
             onMacroRuntimeChange={setMacroRuntime}
             activeTab={sidebarTab}
             onTabChange={setSidebarTab}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useCallback, useState, useEffect, useMemo } from 'react'
+import { sendPost } from '@/lib/regional'
 import {
   type KeyboardMode, defaultKeyboardMode, inputModeFor, keyboardModeLabel, keyboardModeTitle,
   loadKeyboardMode, nextKeyboardMode, saveKeyboardMode,
@@ -282,7 +283,7 @@ export default function SubmitBox({
         const post_hash = (Math.random() * 100000000000000000).toString(36)
         pendingHashesRef.current?.set(post_hash, sentAt)
 
-        socket.emit('post', {
+        sendPost(socket, {
           thread_name: queued.threadName,
           text: queued.text,
           post_hash,
@@ -384,7 +385,7 @@ export default function SubmitBox({
     const post_hash = (Math.random() * 100000000000000000).toString(36)
     pendingHashesRef.current?.set(post_hash, submitAt)
 
-    socket.emit('post', {
+    sendPost(socket, {
       thread_name: threadName,
       text,
       post_hash,
