@@ -8,6 +8,7 @@ import { LatencyReporter } from '@/lib/latencyTelemetry'
 import { noteOwnPost } from '@/lib/clientHealth'
 import { useFavicon } from '@/lib/useFavicon'
 import SubmitBox from './SubmitBox'
+import { CompactCountLauncher, CompactCountToolbar } from './CompactCountControls'
 import InlineThreadPicker from './InlineThreadPicker'
 import { useRedditFeed } from './useRedditFeed'
 import { LC_THREAD_ID, LC_THREAD_NAME, LC_THREAD_TITLE, LC_THREAD_UUID, REDDIT_RATE_LIMIT_MS } from '@/lib/reddit'
@@ -242,6 +243,7 @@ interface RecentSplit {
 }
 
 interface ThreadViewProps {
+  compact?: boolean
   threadName: string
   threadTitle: string
   threadUUID?: string
@@ -717,6 +719,7 @@ function SidebarPanel({
         <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {threadTitle}
         </h1>
+        <CompactCountLauncher threadName={threadName} />
         {(() => {
           const viewers = (isReddit ? redditAbout?.viewerCount ?? null : watcherCount)
           return (
@@ -866,7 +869,7 @@ function useIsNarrow(): boolean {
 }
 
 export default function ThreadView({ threadName: initialThreadName, threadTitle: initialThreadTitle, threadUUID: initialThreadUUID, threadEnabled, initialPosts, ssrNewestTimestamp, contextUUID, isLoggedIn, userUUID, userUsername, userRoles, userXP, prefs, thread: initialThread, miscSettings, initialSplits,
-  isReddit: initialIsReddit, reddit, redditAccess, ssrRedditAbout, bingoGameId = null,
+  isReddit: initialIsReddit, reddit, redditAccess, ssrRedditAbout, bingoGameId = null, compact = false,
 }: ThreadViewProps) {
   _currentUserUUID = userUUID ?? ''
   _currentUserRoles = userRoles ?? []
@@ -1763,6 +1766,25 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
   return (
     <PrefsContext.Provider value={prefs}>
     <>
+      {compact && (
+        <CompactCountToolbar
+          threadTitle={threadTitle}
+          threadName={threadName}
+          status={isReddit ? redditFeed.status : status}
+          onLatest={() => {
+            if (inContext) {
+              window.location.assign(`/thread/${encodeURIComponent(threadName)}?compact=1`)
+              return
+            }
+            const list = olRef.current
+            const scroller = scrollerRef.current
+            if (list && scroller) {
+              scroller.scrollTop = getComputedStyle(list).flexDirection === 'column-reverse' ? scroller.scrollHeight : 0
+            }
+            document.querySelector<HTMLTextAreaElement>('.cgg-compact-thread .composer-bar textarea')?.focus({ preventScroll: true })
+          }}
+        />
+      )}
       <style>{`
         .thread-layout {
           display: flex;
@@ -1831,7 +1853,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
         }
       `}</style>
 
-      <div className={`thread-layout${prefs.pref_post_position === 'Right' ? ' pp-right' : ''}`}>
+      <div className={`thread-layout${prefs.pref_post_position === 'Right' ? ' pp-right' : ''}${compact ? ' cgg-compact-thread' : ''}`}>
         <div className="thread-tabs">
           <button
             onClick={() => setActiveTab('posts')}
@@ -1855,6 +1877,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
           >
             Sidebar
           </button>
+          <CompactCountLauncher threadName={threadName} />
         </div>
 
         <div className="thread-left" data-thread-picker style={{ ...sidebarWash, ...(prefs.pref_hide_thread_picker ? { display: 'none' } : null) }}>
@@ -1865,8 +1888,8 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
           className={`thread-middle${activeTab === 'sidebar' ? ' tab-hidden' : ''}`}
           style={prefs.pref_load_from_bottom ? { flexDirection: 'column-reverse' } : undefined}
         >
-          {!isReddit && <BingoTeamEmoji />}
-          {narrow && !isReddit && (
+          {!compact && !isReddit && <BingoTeamEmoji />}
+          {!compact && narrow && !isReddit && (
             <BingoStrip
               isLoggedIn={isLoggedIn}
               meUuid={userUUID ?? null}
@@ -1875,7 +1898,7 @@ export default function ThreadView({ threadName: initialThreadName, threadTitle:
               style={{ order: prefs.pref_load_from_bottom ? 99 : -1 }}
             />
           )}
-          {!narrow && !isReddit && bingoGameId != null && (
+          {!compact && !narrow && !isReddit && bingoGameId != null && (
             <div className="bingo-strip-ssr" style={{ order: prefs.pref_load_from_bottom ? 99 : -1 }}>
               <BingoStripSkeleton />
             </div>
