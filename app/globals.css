@@ -556,3 +556,294 @@ img {
   .navbar-logo { height: 28px; }
   .thread-tabs > button { padding: 0 !important; font-size: 13px !important; }
 }
+
+body:has(.thread-layout.cgg-compact-thread) {
+  overflow: hidden;
+}
+
+body:has(.thread-layout.cgg-compact-thread) header:has(.navbar-row) {
+  display: none;
+}
+
+.cgg-compact-launch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 5px;
+  padding: 5px 8px;
+  border: 1px solid var(--thread-line);
+  border-radius: 7px;
+  background: var(--surface-0);
+  color: var(--thread-ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cgg-compact-launch:hover {
+  background: var(--thread-surface);
+}
+
+.cgg-compact-toolbar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 60px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--thread-line);
+  background: var(--surface-raised, var(--surface-0));
+  color: var(--thread-ink);
+  font-size: 12px;
+}
+
+.cgg-compact-mark {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--thread-line);
+  border-radius: 9px;
+  background: var(--thread-accent-soft);
+  color: var(--thread-accent);
+}
+
+.cgg-compact-identity {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.cgg-compact-title {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cgg-compact-subtitle {
+  display: flex;
+  gap: 8px;
+  color: var(--thread-muted);
+  font-size: 10px;
+}
+
+.cgg-compact-status[data-state='live'] {
+  color: var(--success);
+}
+
+.cgg-compact-status[data-state='disconnected'] {
+  color: var(--danger);
+}
+
+.cgg-compact-tools {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  padding-left: 6px;
+  border-left: 1px solid var(--thread-line);
+}
+
+.cgg-compact-tools > :is(a, button),
+.cgg-compact-dialog button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--thread-ink);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.cgg-compact-tools > :is(a, button) {
+  width: 32px;
+  height: 32px;
+}
+
+.cgg-compact-tools > :is(a, button):hover,
+.cgg-compact-dialog button:hover {
+  background: var(--thread-accent-soft);
+  color: var(--thread-accent);
+}
+
+.cgg-compact-launch:focus-visible,
+.cgg-compact-tools > :is(a, button):focus-visible,
+.cgg-compact-dialog :is(input, button):focus-visible {
+  outline: 2px solid var(--thread-accent);
+  outline-offset: 2px;
+}
+
+.thread-layout.cgg-compact-thread {
+  display: flex;
+  flex-direction: row;
+  height: calc(100dvh - 60px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.thread-layout.cgg-compact-thread > :is(.thread-left, .thread-right, .thread-tabs, .thread-sidebar-tab) {
+  display: none !important;
+}
+
+.thread-layout.cgg-compact-thread > .thread-middle {
+  display: flex !important;
+  flex: 1 1 100% !important;
+  order: 0 !important;
+  width: 100% !important;
+  max-width: none;
+  min-width: 0;
+  height: 100% !important;
+  min-height: 0;
+}
+
+.cgg-compact-thread :is(.bingo-strip-ssr, .bingo-strip) {
+  display: none !important;
+}
+
+.cgg-compact-thread .cgg-post-list {
+  padding: 8px 6px !important;
+  gap: 1px !important;
+}
+
+.cgg-compact-thread .post-row {
+  padding: var(--cgg-compact-row-pad, 5px) 8px !important;
+  border-radius: 6px;
+}
+
+.cgg-compact-thread .post-count {
+  font-size: var(--cgg-compact-font, 16px) !important;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.cgg-compact-thread .post-name {
+  font-size: 12px !important;
+}
+
+.cgg-compact-thread .composer-bar {
+  padding: 10px 12px !important;
+  gap: 8px !important;
+}
+
+.cgg-compact-thread .composer-bar:has(.composer-extras > *) {
+  display: flex !important;
+  flex-wrap: wrap;
+}
+
+.cgg-compact-thread .composer-bar textarea {
+  min-height: 42px !important;
+  max-height: 176px !important;
+  font-size: var(--cgg-compact-font, 16px) !important;
+}
+
+.cgg-compact-thread .composer-post {
+  min-height: 42px;
+}
+
+html[data-cgg-compact-times='off'] .cgg-compact-thread .post-time,
+html[data-cgg-compact-splits='off'] .cgg-compact-thread :is(.post-reply-slot, .post-latency),
+html[data-cgg-compact-extras='off'] .cgg-compact-thread .composer-extras {
+  display: none !important;
+}
+
+.cgg-compact-dialog {
+  box-sizing: border-box;
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--thread-line);
+  border-radius: 12px;
+  background: var(--surface-0);
+  color: var(--thread-ink);
+  font-size: 13px;
+}
+
+.cgg-compact-dialog::backdrop {
+  background: rgb(var(--shadow-rgb, 0 0 0) / 0.4);
+}
+
+.cgg-compact-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cgg-compact-dialog h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.cgg-compact-dialog-head button {
+  width: 28px;
+  height: 28px;
+}
+
+.cgg-compact-font-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.cgg-compact-font-row input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--thread-accent);
+}
+
+.cgg-compact-density {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 8px 0;
+  border: 1px solid var(--thread-line);
+  border-radius: 8px;
+}
+
+.cgg-compact-density button {
+  flex: 1;
+  padding: 7px 12px;
+}
+
+.cgg-compact-density button[aria-pressed='true'] {
+  background: var(--thread-accent-soft);
+  color: var(--thread-accent);
+}
+
+.cgg-compact-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--thread-line);
+}
+
+.cgg-compact-toggle input {
+  accent-color: var(--thread-accent);
+}
+
+@media (max-width: 440px) {
+  .cgg-compact-toolbar {
+    gap: 7px;
+    padding-inline: 9px;
+  }
+  .cgg-compact-tools > :is(a, button) {
+    width: 30px;
+  }
+}

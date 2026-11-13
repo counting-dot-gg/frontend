@@ -249,12 +249,13 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
 
 export default async function ThreadPage({ params, searchParams }: {
   params: Promise<{ name: string }>
-  searchParams: Promise<{ context?: string | string[] }>
+  searchParams: Promise<{ context?: string | string[]; compact?: string | string[] }>
 }) {
   const { name } = await params
   const threadName = decodeURIComponent(name)
-  const { context: rawContext } = await searchParams
+  const { context: rawContext, compact: rawCompact } = await searchParams
   const context = (Array.isArray(rawContext) ? rawContext[0] : rawContext) || null
+  const compact = (Array.isArray(rawCompact) ? rawCompact[0] : rawCompact) === '1'
 
   if (threadName === LC_THREAD_NAME) {
     const [session, snapshot, colorTable] = await Promise.all([
@@ -288,6 +289,7 @@ export default async function ThreadPage({ params, searchParams }: {
 
     return (
       <ThreadView
+        compact={compact}
         key={LC_THREAD_NAME}
         threadName={LC_THREAD_NAME}
         threadTitle={LC_THREAD_TITLE}
@@ -333,6 +335,7 @@ export default async function ThreadPage({ params, searchParams }: {
 
   return (
     <ThreadView
+        compact={compact}
       key={threadName}
       threadName={threadName}
       threadTitle={thread?.title ?? threadName}
