@@ -99,7 +99,7 @@ function Chevron({ open }: { open: boolean }) {
   )
 }
 
-export default function RegionPicker({ regional, isLoggedIn }: { regional: Regional; isLoggedIn: boolean }) {
+export default function RegionPicker({ regional, isLoggedIn, isStaff }: { regional: Regional; isLoggedIn: boolean; isStaff: boolean }) {
   const { owner, ping, vpsPing, refusal, pick, cancel } = regional
   const [open, setOpen] = useState(false)
   const [pings, setPings] = useState<Partial<Record<RegionId, number>>>({})
@@ -133,7 +133,7 @@ export default function RegionPicker({ regional, isLoggedIn }: { regional: Regio
   }, [open])
 
   if (!owner?.movable) return null
-  const coolingDown = remaining > 0
+  const coolingDown = remaining > 0 && !isStaff
   const locked = owner.moving || coolingDown || !isLoggedIn
   const choose = (region: string) => {
     setOpen(false)
