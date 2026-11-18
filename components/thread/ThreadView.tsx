@@ -741,7 +741,11 @@ function SidebarPanel({
             </span>
           )
         })()}
-        <RegionPicker regional={regional} isLoggedIn={isLoggedIn} />
+        <RegionPicker
+          regional={regional}
+          isLoggedIn={isLoggedIn}
+          isStaff={!!userRoles?.some(r => r === 'admin' || r === 'mod')}
+        />
       </div>
 
       <div style={{

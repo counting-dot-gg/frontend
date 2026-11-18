@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { subscribeChatPanel, readChatPanel, readChatPanelServer, requestOpenChat } from '@/lib/chatPanel'
 import type { MiscSettings } from '@/lib/types'
 import { useThreadColors } from '@/app/providers'
+import { useSiteStatus } from '@/lib/siteStatus'
 
 const NavDrawer = dynamic(() => import('./NavDrawer'), { ssr: false })
 const NavUserMenu = dynamic(() => import('./NavUserMenu'))
@@ -27,6 +28,7 @@ export function Navbar({ user, miscSettings }: NavbarProps) {
   const [panelsMounted, setPanelsMounted] = useState(false)
   const pathname = usePathname()
   const { color1, color2 } = useThreadColors()
+  const majorOutage = useSiteStatus().level === 'major'
 
   useEffect(() => {
     if (panelsMounted) return
@@ -70,13 +72,16 @@ export function Navbar({ user, miscSettings }: NavbarProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0 relative size-11 text-white hover:bg-white/15 hover:text-white"
+            className={cn(
+              'shrink-0 relative size-11 text-white hover:bg-white/15 hover:text-white',
+              majorOutage && 'bg-[var(--danger)] hover:bg-[var(--danger)]/85',
+            )}
             onClick={() => { setPanelsMounted(true); setMenuOpen(true) }}
-            aria-label="Open menu"
+            aria-label={majorOutage ? 'Open menu, major issue' : 'Open menu'}
           >
             <Menu className="size-[26px]" />
             {!!user?.unreadMentionCount && (
-              <span className="absolute top-1 right-1 size-2 rounded-full bg-destructive" />
+              <span className={cn('absolute top-1 right-1 size-2 rounded-full bg-destructive', majorOutage && 'bg-white')} />
             )}
           </Button>
           <Button

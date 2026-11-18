@@ -4,8 +4,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   Hash, Home, BookOpen, BarChart2, Users, Trophy, Tag, ShoppingBag,
-  Gavel, Search, Smile, ShieldCheck, Shuffle, Type, Gift, MessageSquare, Clock,
+  Gavel, Search, Smile, ShieldCheck, Shuffle, Type, Gift, MessageSquare, Clock, Activity,
 } from 'lucide-react'
+import { LEVEL_COLOR, useSiteStatus } from '@/lib/siteStatus'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -61,6 +62,9 @@ export default function NavDrawer({ open, onOpenChange, user }: NavDrawerProps) 
             </Link>
           ))}
 
+          <div className="mx-4 my-2 border-t border-border/60" />
+          <StatusLink onNavigate={() => onOpenChange(false)} />
+
           {user?.counter?.roles?.includes('admin') && (
             <>
               <div className="mx-4 my-2 border-t border-border/60" />
@@ -88,6 +92,34 @@ export default function NavDrawer({ open, onOpenChange, user }: NavDrawerProps) 
       </SheetContent>
     </Sheet>
   )
+}
+
+function StatusLink({ onNavigate }: { onNavigate: () => void }) {
+  const { level, firing } = useSiteStatus()
+  return (
+    <Link
+      href="/status"
+      onClick={onNavigate}
+      className="flex flex-col gap-1 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+    >
+      <span className="flex items-center gap-3">
+        <Activity className="size-4 shrink-0" style={{ color: LEVEL_COLOR[level] }} />
+        Status
+      </span>
+      {firing.map(f => (
+        <span key={f.title} className="flex items-center gap-2 pl-7 text-xs">
+          <span className="size-1.5 shrink-0 rounded-full" style={{ background: LEVEL_COLOR[f.severity] }} />
+          <span className="min-w-0 flex-1 truncate text-foreground">{f.title}</span>
+          {f.since !== null && <span className="tabular-nums" suppressHydrationWarning>{elapsed(f.since)}</span>}
+        </span>
+      ))}
+    </Link>
+  )
+}
+
+function elapsed(since: number): string {
+  const mins = Math.max(0, Math.round((Date.now() - since) / 60000))
+  return mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.round(mins / 60)}h` : `${Math.round(mins / 1440)}d`
 }
 
 function BuildStamp() {
